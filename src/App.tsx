@@ -1,4 +1,4 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { HashRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { DocLayout } from '@/components/layout/DocLayout'
 import { DocPage } from '@/pages/DocPage'
 import { NotFound } from '@/pages/NotFound'
@@ -8,7 +8,7 @@ function App() {
   const routes = Object.keys(pageRegistry)
 
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         <Route element={<DocLayout />}>
           {routes.map((path) => (
@@ -18,7 +18,7 @@ function App() {
           <Route path="*" element={<Navigate to="/404" replace />} />
         </Route>
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   )
 }
 
