@@ -145,21 +145,21 @@ export const gameLaunchPage = createApiEndpointPage({
   title: '/v1/game/launch',
   description: 'Launch a game session for a registered player and receive a URL to embed or redirect.',
   bodyExample: `{
-  "playerCode": 100000121,
+  "playerExternalId": 100000121,
+  "providerId": 1,
   "gameCode": "slot_fortune_tiger",
   "currency": "USD",
-  "language": "en",
-  "returnUrl": "https://operator.example/lobby"
+  "language": "en"
 }`,
   bodyParams: [
     {
       type: 'param-table',
       params: [
-        { name: 'playerCode', type: 'number', description: 'Bull Play player code', required: true },
+        { name: 'playerExternalId', type: 'number', description: 'Bull Play player code', required: true },
+        { name: 'providerId', type: 'number', description: 'provider id', required: true },
         { name: 'gameCode', type: 'string', description: 'Game identifier from game list', required: true },
         { name: 'currency', type: 'string', description: 'Player currency code', required: true },
         { name: 'language', type: 'string', description: 'ISO 639-1 language code', required: false },
-        { name: 'returnUrl', type: 'string', description: 'URL to redirect after session ends', required: false },
       ],
     },
   ],
