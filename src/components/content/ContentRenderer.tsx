@@ -9,16 +9,22 @@ import { MethodBadge } from '@/components/ui/MethodBadge'
 
 interface ContentRendererProps {
   blocks: ContentBlock[]
+  idPrefix?: string
 }
 
-function slugify(text: string) {
+export function slugify(text: string) {
   return text
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '')
 }
 
-export function ContentRenderer({ blocks }: ContentRendererProps) {
+export function headingAnchorId(pathname: string, headingId: string) {
+  const prefix = slugify(pathname) || 'page'
+  return `${prefix}--${headingId}`
+}
+
+export function ContentRenderer({ blocks, idPrefix = '' }: ContentRendererProps) {
   return (
     <div className="doc-prose">
       {blocks.map((block, index) => {
@@ -27,7 +33,7 @@ export function ContentRenderer({ blocks }: ContentRendererProps) {
             return <p key={index}>{block.text}</p>
 
           case 'heading': {
-            const id = block.id ?? slugify(block.text)
+            const id = headingAnchorId(idPrefix, block.id ?? slugify(block.text))
             const Tag = block.level === 2 ? 'h2' : block.level === 3 ? 'h3' : 'h4'
             return (
               <Tag key={index} id={id}>
@@ -164,11 +170,11 @@ export function ContentRenderer({ blocks }: ContentRendererProps) {
   )
 }
 
-export function extractHeadings(blocks: ContentBlock[]) {
+export function extractHeadings(blocks: ContentBlock[], idPrefix = '') {
   return blocks
     .filter((block): block is Extract<ContentBlock, { type: 'heading' }> => block.type === 'heading')
     .map((block) => ({
-      id: block.id ?? slugify(block.text),
+      id: headingAnchorId(idPrefix, block.id ?? slugify(block.text)),
       text: block.text,
       level: block.level,
     }))

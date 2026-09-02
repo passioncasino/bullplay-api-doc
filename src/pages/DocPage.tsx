@@ -10,7 +10,10 @@ export function DocPage() {
   const location = useLocation()
   const page = getPageByPath(location.pathname)
 
-  const headings = useMemo(() => (page ? extractHeadings(page.blocks) : []), [page])
+  const headings = useMemo(
+    () => (page ? extractHeadings(page.blocks, location.pathname) : []),
+    [page, location.pathname],
+  )
   const adjacentPages = useMemo(
     () => getAdjacentPages(location.pathname),
     [location.pathname],
@@ -29,7 +32,7 @@ export function DocPage() {
             <p className="mt-4 text-lg leading-8 text-doc-muted">{page.description}</p>
           )}
         </header>
-        <ContentRenderer blocks={page.blocks} />
+        <ContentRenderer blocks={page.blocks} idPrefix={location.pathname} />
         {adjacentPages && (
           <PageNavigation prev={adjacentPages.prev} next={adjacentPages.next} />
         )}

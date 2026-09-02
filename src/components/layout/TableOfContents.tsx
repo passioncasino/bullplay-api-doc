@@ -10,6 +10,13 @@ interface TableOfContentsProps {
   items: TocItem[]
 }
 
+function scrollToHeading(id: string) {
+  document.getElementById(id)?.scrollIntoView({
+    behavior: 'smooth',
+    block: 'start',
+  })
+}
+
 export function TableOfContents({ items }: TableOfContentsProps) {
   const [activeId, setActiveId] = useState(items[0]?.id ?? '')
 
@@ -53,17 +60,13 @@ export function TableOfContents({ items }: TableOfContentsProps) {
 
             return (
               <li key={item.id}>
-                <a
-                  href={`#${item.id}`}
-                  onClick={(event) => {
-                    event.preventDefault()
+                <button
+                  type="button"
+                  onClick={() => {
                     setActiveId(item.id)
-                    document.getElementById(item.id)?.scrollIntoView({
-                      behavior: 'smooth',
-                      block: 'start',
-                    })
+                    scrollToHeading(item.id)
                   }}
-                  className={`block border-l-2 py-1 text-sm transition ${
+                  className={`block w-full border-l-2 py-1 text-left text-sm transition ${
                     item.level === 2 ? 'pl-4' : 'pl-6'
                   } ${
                     isActive
@@ -72,7 +75,7 @@ export function TableOfContents({ items }: TableOfContentsProps) {
                   }`}
                 >
                   {item.text}
-                </a>
+                </button>
               </li>
             )
           })}
