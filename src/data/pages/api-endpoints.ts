@@ -254,23 +254,24 @@ export const walletDepositPage = createApiEndpointPage({
   title: '/v1/player/wallet/deposit',
   description: 'Deposit funds into a player wallet. Available in Balance Transfer mode only.',
   bodyData: `{
-  "playerCode": 100000121,
-  "amount": 100.00,
-  "currency": "USD",
-  "transactionId": "dep_unique_001"
-}`,
-  responseData: `{
-  "success": true,
-  "message": "OK",
-  "data": {
-    "balance": 100.00,
+    "playerExternalId": 100000121,
+    "amount": 100.00,
     "currency": "USD"
-  }
-}`,
+  }`,
+  responseData: `{
+    "success": true,
+    "message": "OK",
+    "data": {
+      "balance": 100.00,
+      "currency": "USD",
+      "amount": 100
+    }
+  }`,
   responseParams: responseFields([
     { name: 'data', type: 'object', description: 'Updated wallet balance after the deposit.' },
     { name: 'data.balance', type: 'number', description: 'Current player wallet balance.' },
     { name: 'data.currency', type: 'string', description: 'Currency code of the wallet.' },
+    { name: 'data.amount', type: 'string', description: 'Amount that was successfully deposited into the wallet.' },
   ]),
   notes: 'This endpoint is not used in Seamless integration mode.',
 })
@@ -281,23 +282,24 @@ export const walletWithdrawPage = createApiEndpointPage({
   title: '/v1/player/wallet/withdraw',
   description: 'Withdraw funds from a player wallet. Available in Balance Transfer mode only.',
   bodyData: `{
-  "playerCode": 100000121,
-  "amount": 50.00,
-  "currency": "USD",
-  "transactionId": "wd_unique_001"
-}`,
-  responseData: `{
-  "success": true,
-  "message": "OK",
-  "data": {
-    "balance": 50.00,
+    "playerExternalId": 100000121,
+    "amount": 50.00,
     "currency": "USD"
-  }
-}`,
+  }`,
+  responseData: `{
+    "success": true,
+    "message": "OK",
+    "data": {
+      "balance": 50.00,
+      "currency": "USD",
+      "amount": 100.59
+    }
+  }`,
   responseParams: responseFields([
     { name: 'data', type: 'object', description: 'Updated wallet balance after the withdrawal.' },
     { name: 'data.balance', type: 'number', description: 'Current player wallet balance.' },
     { name: 'data.currency', type: 'string', description: 'Currency code of the wallet.' },
+    { name: 'data.amount', type: 'string', description: 'Amount that was successfully withdrawed from the wallet.' },
   ]),
 })
 

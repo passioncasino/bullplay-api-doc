@@ -33,16 +33,16 @@ export const navigation: NavItem[] = [
       // { title: '/v1/operator/transfer-balance', path: '/api/v1/operator/transfer-balance' },
       { title: '/v1/player/create', path: '/api/v1/player/create' },
       // { title: '/v1/player/info', path: '/api/v1/player/info' },
-      // {
-      //   title: '/v1/player/wallet/deposit',
-      //   path: '/api/v1/player/wallet/deposit',
-      //   badge: 'Transfer',
-      // },
-      // {
-      //   title: '/v1/player/wallet/withdraw',
-      //   path: '/api/v1/player/wallet/withdraw',
-      //   badge: 'Transfer',
-      // },
+      {
+        title: '/v1/player/wallet/deposit',
+        path: '/api/v1/player/wallet/deposit',
+        badge: 'Transfer',
+      },
+      {
+        title: '/v1/player/wallet/withdraw',
+        path: '/api/v1/player/wallet/withdraw',
+        badge: 'Transfer',
+      },
       { title: '/v1/provider/list', path: '/api/v1/provider/list' },
       { title: '/v1/provider/settings', path: '/api/v1/provider/settings' },
       {
