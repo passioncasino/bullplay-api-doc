@@ -5,12 +5,13 @@ interface ApiEndpointConfig {
   path: string
   title: string
   description: string
+  introBlocks?: DocPage['blocks']
   pathParams?: DocParam[]
   queryParams?: DocParam[]
   bodyData?: string
   bodyParams?: DocPage['blocks']
   responseData: string
-  responseParams?: DocPage['blocks']
+  responseParams?: DocParam[]
   notes?: string
 }
 
@@ -22,6 +23,13 @@ function createApiEndpointPage(config: ApiEndpointConfig): DocPage {
       path: config.path,
       description: config.description,
     },
+  ]
+
+  if (config.introBlocks?.length) {
+    blocks.push(...config.introBlocks)
+  }
+
+  blocks.push(
     { type: 'heading', level: 2, text: 'Headers', id: 'headers' },
     {
       type: 'table',
@@ -32,7 +40,7 @@ function createApiEndpointPage(config: ApiEndpointConfig): DocPage {
         ['Accept', 'application/json'],
       ],
     },
-  ]
+  )
 
   if (config.pathParams?.length) {
     blocks.push(
@@ -63,8 +71,12 @@ function createApiEndpointPage(config: ApiEndpointConfig): DocPage {
     { type: 'code', language: 'json', code: config.responseData },
   )
 
-  if (config.responseParams) {
-    blocks.push(...config.responseParams)
+  if (config.responseParams?.length) {
+    blocks.push({
+      type: 'param-table',
+      hideRequired: true,
+      params: config.responseParams,
+    })
   }
 
   if (config.notes) {
@@ -76,6 +88,18 @@ function createApiEndpointPage(config: ApiEndpointConfig): DocPage {
   }
 
   return { title: config.title, description: config.description, blocks }
+}
+
+function responseFields(dataFields: DocParam[] = []): DocParam[] {
+  return [
+    {
+      name: 'success',
+      type: 'boolean',
+      description: 'Indicates whether the request was processed successfully.',
+    },
+    { name: 'message', type: 'string', description: 'Result message of the request.' },
+    ...dataFields,
+  ]
 }
 
 export const operatorInfoPage = createApiEndpointPage({
@@ -93,21 +117,17 @@ export const operatorInfoPage = createApiEndpointPage({
     "integrationMode": "seamless"
   }
 }`,
-  responseParams: [
+  responseParams: responseFields([
+    { name: 'data', type: 'object', description: 'Authenticated operator profile and configuration.' },
+    { name: 'data.operatorCode', type: 'string', description: 'Unique operator identifier.' },
+    { name: 'data.name', type: 'string', description: 'Display name of the operator.' },
+    { name: 'data.currencies', type: 'string[]', description: 'Supported currency codes.' },
     {
-      type: 'param-table',
-      params: [
-        { name: 'operatorCode', type: 'string', description: 'Unique operator identifier' },
-        { name: 'name', type: 'string', description: 'Display name of the operator' },
-        { name: 'currencies', type: 'string[]', description: 'Supported currency codes' },
-        {
-          name: 'integrationMode',
-          type: 'string',
-          description: 'Active integration mode: seamless or transfer',
-        },
-      ],
+      name: 'data.integrationMode',
+      type: 'string',
+      description: 'Active integration mode: seamless or transfer.',
     },
-  ],
+  ]),
 })
 
 export const playerCreatePage = createApiEndpointPage({
@@ -139,20 +159,14 @@ export const playerCreatePage = createApiEndpointPage({
     "playerCode": 100000121
   }
 }`,
-  responseParams: [
+  responseParams: responseFields([
+    { name: 'data', type: 'object', description: 'Created player information.' },
     {
-      type: 'param-table',
-      params: [
-        { name: 'success', type: 'boolean', description: 'Whether the request succeeded' },
-        { name: 'message', type: 'string', description: 'Result message' },
-        {
-          name: 'data.playerCode',
-          type: 'number',
-          description: 'Unique integer identifier assigned within Bull Play',
-        },
-      ],
+      name: 'data.playerCode',
+      type: 'number',
+      description: 'Unique integer identifier assigned within Bull Play.',
     },
-  ],
+  ]),
 })
 
 export const gameLaunchPage = createApiEndpointPage({
@@ -187,6 +201,15 @@ export const gameLaunchPage = createApiEndpointPage({
     "sessionId": "sess_9f2a1b"
   }
 }`,
+  responseParams: responseFields([
+    { name: 'data', type: 'object', description: 'Launch details for the game session.' },
+    {
+      name: 'data.gameUrl',
+      type: 'string (URL)',
+      description: 'URL to embed or redirect the player into the game.',
+    },
+    { name: 'data.sessionId', type: 'string', description: 'Identifier of the created game session.' },
+  ]),
 })
 
 export const playerInfoPage = createApiEndpointPage({
@@ -213,6 +236,16 @@ export const playerInfoPage = createApiEndpointPage({
     "status": "active"
   }
 }`,
+  responseParams: responseFields([
+    { name: 'data', type: 'object', description: 'Player profile information.' },
+    { name: 'data.playerCode', type: 'number', description: 'Unique integer identifier assigned within Bull Play.' },
+    {
+      name: 'data.playerExternalId',
+      type: 'string',
+      description: 'Unique player identifier from the operator system.',
+    },
+    { name: 'data.status', type: 'string', description: 'Current player status (e.g., active).' },
+  ]),
 })
 
 export const walletDepositPage = createApiEndpointPage({
@@ -234,6 +267,11 @@ export const walletDepositPage = createApiEndpointPage({
     "currency": "USD"
   }
 }`,
+  responseParams: responseFields([
+    { name: 'data', type: 'object', description: 'Updated wallet balance after the deposit.' },
+    { name: 'data.balance', type: 'number', description: 'Current player wallet balance.' },
+    { name: 'data.currency', type: 'string', description: 'Currency code of the wallet.' },
+  ]),
   notes: 'This endpoint is not used in Seamless integration mode.',
 })
 
@@ -256,6 +294,11 @@ export const walletWithdrawPage = createApiEndpointPage({
     "currency": "USD"
   }
 }`,
+  responseParams: responseFields([
+    { name: 'data', type: 'object', description: 'Updated wallet balance after the withdrawal.' },
+    { name: 'data.balance', type: 'number', description: 'Current player wallet balance.' },
+    { name: 'data.currency', type: 'string', description: 'Currency code of the wallet.' },
+  ]),
 })
 
 export const operatorCreatePage = createApiEndpointPage({
@@ -274,6 +317,10 @@ export const operatorCreatePage = createApiEndpointPage({
     "operatorCode": "OP10002"
   }
 }`,
+  responseParams: responseFields([
+    { name: 'data', type: 'object', description: 'Created operator information.' },
+    { name: 'data.operatorCode', type: 'string', description: 'Unique operator identifier.' },
+  ]),
 })
 
 export const operatorUpdatePage = createApiEndpointPage({
@@ -290,6 +337,9 @@ export const operatorUpdatePage = createApiEndpointPage({
   "message": "OK",
   "data": {}
 }`,
+  responseParams: responseFields([
+    { name: 'data', type: 'object', description: 'Empty object when the operator update succeeds.' },
+  ]),
 })
 
 export const operatorTransferBalancePage = createApiEndpointPage({
@@ -310,6 +360,10 @@ export const operatorTransferBalancePage = createApiEndpointPage({
     "transferId": "trf_001"
   }
 }`,
+  responseParams: responseFields([
+    { name: 'data', type: 'object', description: 'Result of the balance transfer.' },
+    { name: 'data.transferId', type: 'string', description: 'Unique identifier of the transfer.' },
+  ]),
 })
 
 export const providerListPage = createApiEndpointPage({
@@ -320,17 +374,26 @@ export const providerListPage = createApiEndpointPage({
   responseData: `{
   "success": true,
   "message": "OK",
-  "data": {
-    "providers": [
-      {   
-        "status": 1,
-        "providerId": 1, 
-        "providerName": "Pragmatic Play",
-        "logo": "https://example.com/pragmatic.png",
-      }
-    ]
-  }
+  "data": [
+    {
+      "providerId": 1,
+      "providerName": "Pragmatic Play",
+      "logo": "https://example.com/pragmatic.png",
+      "status": 1
+    }
+  ]
 }`,
+  responseParams: responseFields([
+    { name: 'data', type: 'array', description: 'List of game providers available to the operator.' },
+    { name: 'data[].providerId', type: 'number', description: 'Unique identifier of the provider.' },
+    { name: 'data[].providerName', type: 'string', description: 'Display name of the provider.' },
+    { name: 'data[].logo', type: 'string (URL)', description: "URL of the provider's logo image." },
+    {
+      name: 'data[].status',
+      type: 'number',
+      description: 'Provider status (e.g., 1 = active, 0 = inactive).',
+    },
+  ]),
 })
 
 export const providerSettingsPage = createApiEndpointPage({
@@ -357,6 +420,10 @@ export const providerSettingsPage = createApiEndpointPage({
       "settings": []
     }
   }`,
+  responseParams: responseFields([
+    { name: 'data', type: 'object', description: 'Provider settings for the operator.' },
+    { name: 'data.settings', type: 'array', description: 'List of provider-level setting entries.' },
+  ]),
 })
 
 export const providerSettingsByIdPage = createApiEndpointPage({
@@ -382,6 +449,12 @@ export const providerSettingsByIdPage = createApiEndpointPage({
     "enabled": true
   }
 }`,
+  responseParams: responseFields([
+    { name: 'data', type: 'object', description: 'Settings for the specified provider and currency.' },
+    { name: 'data.providerId', type: 'string', description: 'Identifier of the provider.' },
+    { name: 'data.currency', type: 'string', description: 'Currency code these settings apply to.' },
+    { name: 'data.enabled', type: 'boolean', description: 'Whether the provider is enabled for this currency.' },
+  ]),
 })
 
 export const gameListPage = createApiEndpointPage({
@@ -395,16 +468,32 @@ export const gameListPage = createApiEndpointPage({
   responseData: `{
   "success": true,
   "message": "OK",
-  "data": {
+  "data": [
     {
       "gameID": "vswaysdogs",
       "gameName": "The Dog House Megaways",
       "gameImage": "https://contents.example.com/imgae/120*120/1.png",
-      "gameType": 0, // 0: Slot, 1: Live, 2: Other
+      "gameType": 0,
       "inMaintenance": false
     }
-  }
+  ]
 }`,
+  responseParams: responseFields([
+    { name: 'data', type: 'array', description: 'List of games available from the provider.' },
+    { name: 'data[].gameID', type: 'string', description: 'Game identifier used when launching a game.' },
+    { name: 'data[].gameName', type: 'string', description: 'Display name of the game.' },
+    { name: 'data[].gameImage', type: 'string (URL)', description: 'URL of the game thumbnail image.' },
+    {
+      name: 'data[].gameType',
+      type: 'number',
+      description: 'Game type (0 = Slot, 1 = Live, 2 = Other).',
+    },
+    {
+      name: 'data[].inMaintenance',
+      type: 'boolean',
+      description: 'Whether the game is currently in maintenance.',
+    },
+  ]),
 })
 
 export const gameKickPage = createApiEndpointPage({
@@ -420,6 +509,9 @@ export const gameKickPage = createApiEndpointPage({
   "message": "OK",
   "data": {}
 }`,
+  responseParams: responseFields([
+    { name: 'data', type: 'object', description: 'Empty object when the kick request succeeds.' },
+  ]),
 })
 
 export const transactionListPage = createApiEndpointPage({
@@ -435,6 +527,11 @@ export const transactionListPage = createApiEndpointPage({
     "total": 0
   }
 }`,
+  responseParams: responseFields([
+    { name: 'data', type: 'object', description: 'Paginated transaction history.' },
+    { name: 'data.transactions', type: 'array', description: 'List of matching transactions.' },
+    { name: 'data.total', type: 'number', description: 'Total number of transactions matching the query.' },
+  ]),
 })
 
 export const transactionRoundPage = createApiEndpointPage({
@@ -450,27 +547,146 @@ export const transactionRoundPage = createApiEndpointPage({
     "transactions": []
   }
 }`,
+  responseParams: responseFields([
+    { name: 'data', type: 'object', description: 'Transactions belonging to the requested game round.' },
+    { name: 'data.roundId', type: 'string', description: 'Identifier of the game round.' },
+    { name: 'data.transactions', type: 'array', description: 'List of transactions in this round.' },
+  ]),
 })
 
 export const bonusCallRegisterPage = createApiEndpointPage({
   method: 'POST',
   path: '/v1/bonus-call/register',
   title: '/v1/bonus-call/register',
-  description: 'Register a bonus call campaign for a player.',
-  bodyData: `{
-  "playerCode": 100000121,
-  "gameCode": "slot_fortune_tiger",
-  "rounds": 10,
-  "betAmount": 1.00,
-  "currency": "USD"
+  description:
+    'Initiates a bonus call session for a user. This endpoint validates eligibility, executes the bonus logic, and returns an issue ID which can be used for tracking or further management.',
+  introBlocks: [
+    {
+      type: 'paragraph',
+      text: 'When registering a bonus call, you need to configure the gameCode field. You can define whether the bonus event should be triggered for specific games or for all games under the selected provider.',
+    },
+    {
+      type: 'paragraph',
+      text: 'If gameCode is configured as an array of game codes, the bonus event will be triggered when the player enters any one of the specified games. Multiple game codes can be added to the array, allowing the bonus to be activated by different games within the same provider.',
+    },
+    {
+      type: 'code',
+      language: 'json',
+      code: `{
+  "gameCode": ["vs20olympx", "vswaysdogs", "vs20fruitsw"]
 }`,
+    },
+    {
+      type: 'paragraph',
+      text: 'In this example, the bonus event will be triggered when the player enters vs20olympx, vswaysdogs, or vs20fruitsw.',
+    },
+    {
+      type: 'paragraph',
+      text: 'If gameCode is configured as "all", the bonus event will be triggered when the player enters any game under the selected provider, without applying any game-specific filtering.',
+    },
+    {
+      type: 'code',
+      language: 'json',
+      code: `{
+  "gameCode": "all"
+}`,
+    },
+    {
+      type: 'paragraph',
+      text: 'This option is recommended when the bonus should apply globally to all games provided by the selected provider.',
+    },
+    {
+      type: 'callout',
+      variant: 'info',
+      text: 'Once a bonus call is completed in one of the selected games, it will not be triggered again for other selected games.',
+    },
+  ],
+  bodyData: `{
+  "providerId": 1,
+  "gameCode": ["vs20olympx", "vswaysdogs", "vs20fruitsw"],
+  "playerExternalId": "playerId_onOperatorSide",
+  "currency": "USD",
+  "bonusType": 1,
+  "callAmount": 100.00,
+  "expireAt": "2026-12-01 23:59:59"
+}`,
+  bodyParams: [
+    {
+      type: 'param-table',
+      params: [
+        {
+          name: 'issueId',
+          type: 'string',
+          description: 'Unique ID for the issue or request',
+          required: false,
+        },
+        { name: 'providerId', type: 'number', description: 'Game provider ID', required: true },
+        {
+          name: 'gameCode',
+          type: 'string[] | string',
+          description:
+            'Specifies which games can trigger the bonus event. Use an array of game codes to trigger the bonus when the player enters any of those games, or "all" to trigger it for any game under the selected provider.',
+          required: true,
+        },
+        {
+          name: 'playerExternalId',
+          type: 'string',
+          description: "Player's unique ID on the operator side",
+          required: true,
+        },
+        { name: 'currency', type: 'string', description: 'Currency code (e.g., USD)', required: true },
+        {
+          name: 'bonusType',
+          type: 'number',
+          description:
+            'Type of bonus (1 = regular bonus call, 2 = free spin bonus). Free spin bonus (bonusType=2) is available only for Pragmatic Play and EGT Digital.',
+          required: true,
+        },
+        {
+          name: 'callAmount',
+          type: 'number',
+          description:
+            'Amount related to the bonus call. If bonusType = 1, the player will win this amount. If bonusType = 2, this is the maximum win amount — the player cannot win more than callAmount.',
+          required: true,
+        },
+        {
+          name: 'expireAt',
+          type: 'string',
+          description: 'Expire timestamp (YYYY-MM-DD HH:mm:ss). For example, 2026-12-01 23:59:59',
+          required: true,
+        },
+        {
+          name: 'metaData',
+          type: 'object',
+          description: 'Object containing detailed bonus information. Required when bonusType = 2.',
+          required: false,
+        },
+        {
+          name: 'metaData.spinAmount',
+          type: 'number',
+          description: 'Number of free bonus spins. Min: 10, Max: 100',
+          required: true,
+        },
+        {
+          name: 'metaData.baseBetAmount',
+          type: 'number',
+          description: 'Base bet amount. Example: for a 2 USD free spin, use baseBetAmount: 2',
+          required: true,
+        },
+      ],
+    },
+  ],
   responseData: `{
   "success": true,
   "message": "OK",
   "data": {
-    "issueId": "bonus_001"
+    "issueId": "issueId_001"
   }
 }`,
+  responseParams: responseFields([
+    { name: 'data', type: 'object', description: 'Result of the bonus call registration.' },
+    { name: 'data.issueId', type: 'string', description: 'Unique ID for the issue or request.' },
+  ]),
 })
 
 export const bonusCallCancelPage = createApiEndpointPage({
@@ -479,13 +695,13 @@ export const bonusCallCancelPage = createApiEndpointPage({
   title: '/v1/bonus-call/cancel',
   description: 'Cancel a previously registered bonus call.',
   bodyData: `{
-  "issueId": "bonus_001"
-}`,
+    "issueId": "bonus_001"
+  }`,
   responseData: `{
-  "success": true,
-  "message": "OK",
-  "data": {}
-}`,
+    "success": true,
+    "message": "OK"
+  }`,
+  responseParams: responseFields(),
 })
 
 export const bonusCallDetailPage = createApiEndpointPage({
@@ -505,4 +721,14 @@ export const bonusCallDetailPage = createApiEndpointPage({
     "roundsRemaining": 8
   }
 }`,
+  responseParams: responseFields([
+    { name: 'data', type: 'object', description: 'Current status and details of the bonus call issue.' },
+    { name: 'data.issueId', type: 'string', description: 'Unique ID for the issue or request.' },
+    { name: 'data.status', type: 'string', description: 'Current status of the bonus call (e.g., active).' },
+    {
+      name: 'data.roundsRemaining',
+      type: 'number',
+      description: 'Number of bonus rounds still remaining.',
+    },
+  ]),
 })

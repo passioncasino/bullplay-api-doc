@@ -104,7 +104,14 @@ export function ContentRenderer({ blocks }: ContentRendererProps) {
             )
 
           case 'param-table':
-            return <ParamTable key={index} title={block.title} params={block.params} />
+            return (
+              <ParamTable
+                key={index}
+                title={block.title}
+                params={block.params}
+                hideRequired={block.hideRequired}
+              />
+            )
 
           case 'api-endpoint':
             return (

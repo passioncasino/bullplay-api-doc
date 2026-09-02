@@ -28,7 +28,7 @@ export type ContentBlock =
   | { type: 'list'; items: string[]; ordered?: boolean }
   | { type: 'code'; language: string; code: string; title?: string }
   | { type: 'table'; headers: string[]; rows: string[][] }
-  | { type: 'param-table'; title?: string; params: DocParam[] }
+  | { type: 'param-table'; title?: string; params: DocParam[]; hideRequired?: boolean }
   | { type: 'api-endpoint'; method: HttpMethod; path: string; description?: string }
   | { type: 'feature-cards'; cards: FeatureCard[] }
   | { type: 'callout'; variant: 'info' | 'warning' | 'tip'; title?: string; text: string }
