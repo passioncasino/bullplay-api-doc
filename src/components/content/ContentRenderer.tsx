@@ -86,7 +86,11 @@ export function ContentRenderer({ blocks }: ContentRendererProps) {
                         <tr key={rowIndex}>
                           {row.map((cell, cellIndex) => (
                             <td key={cellIndex} className="px-4 py-3 text-doc-muted">
-                              {cell.startsWith('Bearer') || cell.startsWith('application/') ? (
+                              {cell.startsWith('Bearer') ||
+                              cell.startsWith('application/') ||
+                              cell.startsWith('ERR_') ||
+                              cell.startsWith('{') ||
+                              cell.startsWith('X-') ? (
                                 <code className="rounded bg-doc-hover px-1.5 py-0.5 font-mono text-xs text-doc-text">
                                   {cell}
                                 </code>
