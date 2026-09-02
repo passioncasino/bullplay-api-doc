@@ -21,8 +21,8 @@ export function DocPage() {
   }
 
   return (
-    <div className="flex gap-10 px-4 py-8 lg:px-8 xl:px-12">
-      <article className="min-w-0 flex-1 max-w-3xl">
+    <div className="flex w-full gap-12 px-6 py-8 lg:px-12 xl:px-16">
+      <article className="min-w-0 flex-1">
         <header className="mb-8 border-b border-doc-border pb-8">
           <h1 className="text-4xl font-bold tracking-tight text-doc-text">{page.title}</h1>
           {page.description && (

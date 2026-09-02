@@ -9,7 +9,7 @@ export function DocLayout() {
   return (
     <div className="min-h-screen bg-doc-bg">
       <Header onMenuClick={() => setMobileOpen(true)} />
-      <div className="mx-auto flex max-w-[1600px]">
+      <div className="flex">
         <Sidebar mobileOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
         <main className="min-w-0 flex-1">
           <Outlet />
