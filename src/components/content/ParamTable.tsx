@@ -19,12 +19,10 @@ export function ParamTable({ title, params, hideRequired }: ParamTableProps) {
           <thead className="bg-doc-surface-muted">
             <tr>
               <th className="px-4 py-3 text-left font-semibold text-doc-text">Key</th>
-              <th className="px-4 py-3 text-left font-semibold text-doc-text">
-                {hideRequired ? 'Data Type' : 'Type'}
-              </th>
+              <th className="px-4 py-3 text-left font-semibold text-doc-text">Data Type</th>
               <th className="px-4 py-3 text-left font-semibold text-doc-text">Description</th>
               {!hideRequired && (
-                <th className="px-4 py-3 text-left font-semibold text-doc-text">Required</th>
+                <th className="px-4 py-3 text-left font-semibold text-doc-text">Mandatory</th>
               )}
             </tr>
           </thead>
