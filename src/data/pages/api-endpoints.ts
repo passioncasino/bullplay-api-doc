@@ -1,10 +1,12 @@
-import type { DocPage, HttpMethod } from '@/types/documentation'
+import type { DocPage, DocParam, HttpMethod } from '@/types/documentation'
 
 interface ApiEndpointConfig {
   method: HttpMethod
   path: string
   title: string
   description: string
+  pathParams?: DocParam[]
+  queryParams?: DocParam[]
   bodyExample?: string
   bodyParams?: DocPage['blocks']
   responseExample: string
@@ -31,6 +33,20 @@ function createApiEndpointPage(config: ApiEndpointConfig): DocPage {
       ],
     },
   ]
+
+  if (config.pathParams?.length) {
+    blocks.push(
+      { type: 'heading', level: 2, text: 'Path Parameters', id: 'path-parameters' },
+      { type: 'param-table', params: config.pathParams },
+    )
+  }
+
+  if (config.queryParams?.length) {
+    blocks.push(
+      { type: 'heading', level: 2, text: 'Query Parameters', id: 'query-parameters' },
+      { type: 'param-table', params: config.queryParams },
+    )
+  }
 
   if (config.bodyExample) {
     blocks.push(
@@ -178,6 +194,15 @@ export const playerInfoPage = createApiEndpointPage({
   path: '/v1/player/info',
   title: '/v1/player/info',
   description: 'Retrieve player profile information by player code or external ID.',
+  queryParams: [
+    { name: 'playerCode', type: 'number', description: 'Bull Play player code', required: false },
+    {
+      name: 'playerExternalId',
+      type: 'string',
+      description: 'Unique player identifier from the operator system',
+      required: false,
+    },
+  ],
   notes: 'Pass playerCode or playerExternalId as a query parameter.',
   responseExample: `{
   "success": true,
@@ -297,7 +322,12 @@ export const providerListPage = createApiEndpointPage({
   "message": "OK",
   "data": {
     "providers": [
-      { "providerId": "pragmatic", "name": "Pragmatic Play" }
+      {   
+        "status": 1,
+        "providerId": 1, 
+        "providerName": "Pragmatic Play",
+        "logo": "https://example.com/pragmatic.png",
+      }
     ]
   }
 }`,
@@ -308,13 +338,22 @@ export const providerSettingsPage = createApiEndpointPage({
   path: '/v1/provider/settings',
   title: '/v1/provider/settings',
   description: 'Retrieve provider-level settings for the operator.',
+  queryParams: [
+    { name: 'providerId', type: 'number', description: 'Provider ID', required: true },
+    {
+      name: 'currency',
+      type: 'string',
+      description: 'Currency code for the wallet transaction (e.g., USD)',
+      required: true,
+    },
+  ],
   responseExample: `{
-  "success": true,
-  "message": "OK",
-  "data": {
-    "settings": []
-  }
-}`,
+    "success": true,
+    "message": "OK",
+    "data": {
+      "settings": []
+    }
+  }`,
 })
 
 export const providerSettingsByIdPage = createApiEndpointPage({
@@ -322,6 +361,15 @@ export const providerSettingsByIdPage = createApiEndpointPage({
   path: '/v1/provider/settings/:providerId/:currency',
   title: '/v1/provider/settings/:providerId/:currency',
   description: 'Retrieve provider settings for a specific provider and currency.',
+  pathParams: [
+    { name: 'providerId', type: 'number', description: 'Provider ID', required: true },
+    {
+      name: 'currency',
+      type: 'string',
+      description: 'Currency code for the wallet transaction (e.g., USD)',
+      required: true,
+    },
+  ],
   responseExample: `{
   "success": true,
   "message": "OK",
@@ -338,6 +386,9 @@ export const gameListPage = createApiEndpointPage({
   path: '/v1/game/list/:providerId',
   title: '/v1/game/list/:providerId',
   description: 'List all games available from a specific provider.',
+  pathParams: [
+    { name: 'providerId', type: 'number', description: 'Provider ID', required: true },
+  ],
   responseExample: `{
   "success": true,
   "message": "OK",
@@ -435,6 +486,9 @@ export const bonusCallDetailPage = createApiEndpointPage({
   path: '/v1/bonus-call/detail/:issueId',
   title: '/v1/bonus-call/detail/:issueId',
   description: 'Retrieve the status and details of a bonus call issue.',
+  pathParams: [
+    { name: 'issueId', type: 'string', description: 'Bonus call issue identifier', required: true },
+  ],
   responseExample: `{
   "success": true,
   "message": "OK",
