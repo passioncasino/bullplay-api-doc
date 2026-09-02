@@ -55,7 +55,14 @@ export function TableOfContents({ items }: TableOfContentsProps) {
               <li key={item.id}>
                 <a
                   href={`#${item.id}`}
-                  onClick={() => setActiveId(item.id)}
+                  onClick={(event) => {
+                    event.preventDefault()
+                    setActiveId(item.id)
+                    document.getElementById(item.id)?.scrollIntoView({
+                      behavior: 'smooth',
+                      block: 'start',
+                    })
+                  }}
                   className={`block border-l-2 py-1 text-sm transition ${
                     item.level === 2 ? 'pl-4' : 'pl-6'
                   } ${
