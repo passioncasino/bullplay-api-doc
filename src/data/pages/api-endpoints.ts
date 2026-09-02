@@ -7,9 +7,9 @@ interface ApiEndpointConfig {
   description: string
   pathParams?: DocParam[]
   queryParams?: DocParam[]
-  bodyExample?: string
+  bodyData?: string
   bodyParams?: DocPage['blocks']
-  responseExample: string
+  responseData: string
   responseParams?: DocPage['blocks']
   notes?: string
 }
@@ -48,10 +48,10 @@ function createApiEndpointPage(config: ApiEndpointConfig): DocPage {
     )
   }
 
-  if (config.bodyExample) {
+  if (config.bodyData) {
     blocks.push(
       { type: 'heading', level: 2, text: 'Body', id: 'body' },
-      { type: 'code', language: 'json', code: config.bodyExample },
+      { type: 'code', language: 'json', code: config.bodyData },
     )
     if (config.bodyParams) {
       blocks.push(...config.bodyParams)
@@ -60,7 +60,7 @@ function createApiEndpointPage(config: ApiEndpointConfig): DocPage {
 
   blocks.push(
     { type: 'heading', level: 2, text: 'Response', id: 'response' },
-    { type: 'code', language: 'json', code: config.responseExample },
+    { type: 'code', language: 'json', code: config.responseData },
   )
 
   if (config.responseParams) {
@@ -83,7 +83,7 @@ export const operatorInfoPage = createApiEndpointPage({
   path: '/v1/operator/info',
   title: '/v1/operator/info',
   description: 'Retrieve the authenticated operator profile, supported currencies, and integration settings.',
-  responseExample: `{
+  responseData: `{
   "success": true,
   "message": "OK",
   "data": {
@@ -116,9 +116,9 @@ export const playerCreatePage = createApiEndpointPage({
   title: '/v1/player/create',
   description:
     'Links an external player (identified by a unique ID on the operator side) to the Bull Play system. Required before launching games.',
-  bodyExample: `{
-  "playerExternalId": "playerId_onOperatorSide"
-}`,
+  bodyData: `{
+    "playerExternalId": "playerId_onOperatorSide"
+  }`,
   bodyParams: [
     {
       type: 'param-table',
@@ -132,7 +132,7 @@ export const playerCreatePage = createApiEndpointPage({
       ],
     },
   ],
-  responseExample: `{
+  responseData: `{
   "success": true,
   "message": "OK",
   "data": {
@@ -160,7 +160,7 @@ export const gameLaunchPage = createApiEndpointPage({
   path: '/v1/game/launch',
   title: '/v1/game/launch',
   description: 'Launch a game session for a registered player and receive a URL to embed or redirect.',
-  bodyExample: `{
+  bodyData: `{
   "playerExternalId": 100000121,
   "providerId": 1,
   "gameCode": "slot_fortune_tiger",
@@ -179,7 +179,7 @@ export const gameLaunchPage = createApiEndpointPage({
       ],
     },
   ],
-  responseExample: `{
+  responseData: `{
   "success": true,
   "message": "OK",
   "data": {
@@ -204,7 +204,7 @@ export const playerInfoPage = createApiEndpointPage({
     },
   ],
   notes: 'Pass playerCode or playerExternalId as a query parameter.',
-  responseExample: `{
+  responseData: `{
   "success": true,
   "message": "OK",
   "data": {
@@ -220,13 +220,13 @@ export const walletDepositPage = createApiEndpointPage({
   path: '/v1/player/wallet/deposit',
   title: '/v1/player/wallet/deposit',
   description: 'Deposit funds into a player wallet. Available in Balance Transfer mode only.',
-  bodyExample: `{
+  bodyData: `{
   "playerCode": 100000121,
   "amount": 100.00,
   "currency": "USD",
   "transactionId": "dep_unique_001"
 }`,
-  responseExample: `{
+  responseData: `{
   "success": true,
   "message": "OK",
   "data": {
@@ -242,13 +242,13 @@ export const walletWithdrawPage = createApiEndpointPage({
   path: '/v1/player/wallet/withdraw',
   title: '/v1/player/wallet/withdraw',
   description: 'Withdraw funds from a player wallet. Available in Balance Transfer mode only.',
-  bodyExample: `{
+  bodyData: `{
   "playerCode": 100000121,
   "amount": 50.00,
   "currency": "USD",
   "transactionId": "wd_unique_001"
 }`,
-  responseExample: `{
+  responseData: `{
   "success": true,
   "message": "OK",
   "data": {
@@ -263,11 +263,11 @@ export const operatorCreatePage = createApiEndpointPage({
   path: '/v1/operator/create',
   title: '/v1/operator/create',
   description: 'Create a new operator account in the Bull Play platform.',
-  bodyExample: `{
+  bodyData: `{
   "name": "New Operator",
   "currencies": ["USD"]
 }`,
-  responseExample: `{
+  responseData: `{
   "success": true,
   "message": "OK",
   "data": {
@@ -281,11 +281,11 @@ export const operatorUpdatePage = createApiEndpointPage({
   path: '/v1/operator/update',
   title: '/v1/operator/update',
   description: 'Update operator configuration and integration settings.',
-  bodyExample: `{
+  bodyData: `{
   "name": "Updated Operator Name",
   "callbackUrl": "https://operator.example/wallet"
 }`,
-  responseExample: `{
+  responseData: `{
   "success": true,
   "message": "OK",
   "data": {}
@@ -297,13 +297,13 @@ export const operatorTransferBalancePage = createApiEndpointPage({
   path: '/v1/operator/transfer-balance',
   title: '/v1/operator/transfer-balance',
   description: 'Transfer balance between operator accounts.',
-  bodyExample: `{
+  bodyData: `{
   "fromOperatorCode": "OP10001",
   "toOperatorCode": "OP10002",
   "amount": 1000.00,
   "currency": "USD"
 }`,
-  responseExample: `{
+  responseData: `{
   "success": true,
   "message": "OK",
   "data": {
@@ -317,7 +317,7 @@ export const providerListPage = createApiEndpointPage({
   path: '/v1/provider/list',
   title: '/v1/provider/list',
   description: 'List all game providers available to the operator.',
-  responseExample: `{
+  responseData: `{
   "success": true,
   "message": "OK",
   "data": {
@@ -347,7 +347,10 @@ export const providerSettingsPage = createApiEndpointPage({
       required: true,
     },
   ],
-  responseExample: `{
+  bodyData: `{
+    "settingvalue": true
+  }`,  
+  responseData: `{
     "success": true,
     "message": "OK",
     "data": {
@@ -357,7 +360,7 @@ export const providerSettingsPage = createApiEndpointPage({
 })
 
 export const providerSettingsByIdPage = createApiEndpointPage({
-  method: 'GET',
+  method: 'PUT',
   path: '/v1/provider/settings/:providerId/:currency',
   title: '/v1/provider/settings/:providerId/:currency',
   description: 'Retrieve provider settings for a specific provider and currency.',
@@ -370,7 +373,7 @@ export const providerSettingsByIdPage = createApiEndpointPage({
       required: true,
     },
   ],
-  responseExample: `{
+  responseData: `{
   "success": true,
   "message": "OK",
   "data": {
@@ -389,13 +392,17 @@ export const gameListPage = createApiEndpointPage({
   pathParams: [
     { name: 'providerId', type: 'number', description: 'Provider ID', required: true },
   ],
-  responseExample: `{
+  responseData: `{
   "success": true,
   "message": "OK",
   "data": {
-    "games": [
-      { "gameCode": "slot_fortune_tiger", "name": "Fortune Tiger" }
-    ]
+    {
+      "gameID": "vswaysdogs",
+      "gameName": "The Dog House Megaways",
+      "gameImage": "https://contents.example.com/imgae/120*120/1.png",
+      "gameType": 0, // 0: Slot, 1: Live, 2: Other
+      "inMaintenance": false
+    }
   }
 }`,
 })
@@ -405,10 +412,10 @@ export const gameKickPage = createApiEndpointPage({
   path: '/v1/game/kick',
   title: '/v1/game/kick',
   description: 'Force-disconnect a player from an active game session.',
-  bodyExample: `{
+  bodyData: `{
   "playerCode": 100000121
 }`,
-  responseExample: `{
+  responseData: `{
   "success": true,
   "message": "OK",
   "data": {}
@@ -420,7 +427,7 @@ export const transactionListPage = createApiEndpointPage({
   path: '/v1/transaction/list',
   title: '/v1/transaction/list',
   description: 'Query transaction history with optional filters.',
-  responseExample: `{
+  responseData: `{
   "success": true,
   "message": "OK",
   "data": {
@@ -435,7 +442,7 @@ export const transactionRoundPage = createApiEndpointPage({
   path: '/v1/transaction/round',
   title: '/v1/transaction/round',
   description: 'Retrieve all transactions for a specific game round.',
-  responseExample: `{
+  responseData: `{
   "success": true,
   "message": "OK",
   "data": {
@@ -450,14 +457,14 @@ export const bonusCallRegisterPage = createApiEndpointPage({
   path: '/v1/bonus-call/register',
   title: '/v1/bonus-call/register',
   description: 'Register a bonus call campaign for a player.',
-  bodyExample: `{
+  bodyData: `{
   "playerCode": 100000121,
   "gameCode": "slot_fortune_tiger",
   "rounds": 10,
   "betAmount": 1.00,
   "currency": "USD"
 }`,
-  responseExample: `{
+  responseData: `{
   "success": true,
   "message": "OK",
   "data": {
@@ -471,10 +478,10 @@ export const bonusCallCancelPage = createApiEndpointPage({
   path: '/v1/bonus-call/cancel',
   title: '/v1/bonus-call/cancel',
   description: 'Cancel a previously registered bonus call.',
-  bodyExample: `{
+  bodyData: `{
   "issueId": "bonus_001"
 }`,
-  responseExample: `{
+  responseData: `{
   "success": true,
   "message": "OK",
   "data": {}
@@ -489,7 +496,7 @@ export const bonusCallDetailPage = createApiEndpointPage({
   pathParams: [
     { name: 'issueId', type: 'string', description: 'Bonus call issue identifier', required: true },
   ],
-  responseExample: `{
+  responseData: `{
   "success": true,
   "message": "OK",
   "data": {
