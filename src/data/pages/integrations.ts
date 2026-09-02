@@ -201,25 +201,25 @@ export const seamlessWalletOverviewPage: DocPage = {
       endpoints: [
         {
           method: 'POST',
-          path: '/balance',
+          path: 'balance',
           description: 'Return current player balance',
           pathLink: '/seamless-wallet/balance',
         },
         {
           method: 'POST',
-          path: '/bet',
+          path: 'bet',
           description: 'Debit player balance for a bet',
           pathLink: '/seamless-wallet/bet',
         },
         {
           method: 'POST',
-          path: '/win',
+          path: 'win',
           description: 'Credit player balance for a win',
           pathLink: '/seamless-wallet/win',
         },
         {
           method: 'POST',
-          path: '/cancel',
+          path: 'cancel',
           description: 'Reverse a previously accepted bet',
           pathLink: '/seamless-wallet/cancel',
         },

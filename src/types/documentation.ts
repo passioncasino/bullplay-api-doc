@@ -32,7 +32,12 @@ export type ContentBlock =
   | { type: 'api-endpoint'; method: HttpMethod; path: string; description?: string }
   | { type: 'feature-cards'; cards: FeatureCard[] }
   | { type: 'callout'; variant: 'info' | 'warning' | 'tip'; title?: string; text: string }
-  | { type: 'endpoint-list'; endpoints: { method: HttpMethod; path: string; description: string; pathLink: string }[] }
+  | { type: 'endpoint-list'; endpoints: { 
+    method: HttpMethod; 
+    path: string; 
+    description: string; 
+    pathLink: string }[] 
+  }
 
 export interface DocPage {
   title: string
